@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import { isBulkProduct, findCartLineIndex } from '../lib/cart';
 
 const CartContext = createContext();
 
@@ -36,14 +37,13 @@ export function CartProvider({ children }) {
         [cart]);
 
     const addToCart = (product, quantity = 1) => {
-        // Check for bulk product logic
-        if (product.category === 'Frutas y Verduras' || product.averageWeight || product.isBulk) {
+        if (isBulkProduct(product)) {
             setSelectedBulkProduct(product);
             return;
         }
 
         setCart(prevCart => {
-            const existingItemIndex = prevCart.findIndex(item => item.id === product.id && !item.isBulkSelection);
+            const existingItemIndex = findCartLineIndex(prevCart, product.id);
             if (existingItemIndex >= 0) {
                 const newCart = [...prevCart];
                 newCart[existingItemIndex] = {

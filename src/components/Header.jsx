@@ -3,6 +3,7 @@ import { SearchBox } from './header/SearchBox';
 import { CategoryChips } from './header/CategoryChips';
 import { cn } from '../lib/cn';
 import { formatMoney } from '../lib/format';
+import { isBulkProduct } from '../lib/cart';
 import { navItems, formatCartCount } from '../layouts/navItems';
 
 function DesktopNav({ activeTab, onTabChange, cartCount, cartTotal }) {
@@ -77,7 +78,8 @@ export function Header({
 
     const addAndNotify = useCallback((product) => {
         addToCart(product);
-        notify(`Agregado: ${product.name}`, 'success');
+        // Los productos a granel solo abren su modal; el aviso llega hasta que se agregan de verdad
+        if (!isBulkProduct(product)) notify(`Agregado: ${product.name}`, 'success');
     }, [addToCart, notify]);
 
     const handleVoiceSearch = useCallback((term) => {

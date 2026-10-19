@@ -4,6 +4,7 @@ import { navItems, formatCartCount } from '../layouts/navItems';
 
 // `children` se apila encima de la barra (p. ej. CartStatusBar) dentro del mismo bloque fijo,
 // así nadie tiene que adivinar la altura de la barra inferior.
+// Alto fijo: h-16 + borde = --spacing-nav en theme.css; si cambias uno, cambia el otro.
 export function BottomNav({ activeTab, onTabChange, cartCount, isAnimating, children }) {
   return (
     <div className="fixed inset-x-0 bottom-0 z-[1000] select-none md:hidden">
@@ -24,7 +25,7 @@ export function BottomNav({ activeTab, onTabChange, cartCount, isAnimating, chil
                   aria-current={isActive ? 'page' : undefined}
                   aria-label={isCart && cartCount > 0 ? `${label}, ${cartCount} artículos` : undefined}
                   className={cn(
-                    'flex w-full cursor-pointer touch-manipulation flex-col items-center gap-1 border-0 bg-transparent pt-2 pb-2.5 font-sans text-[0.7rem] font-medium',
+                    'flex h-16 w-full cursor-pointer touch-manipulation flex-col items-center justify-center gap-1 border-0 bg-transparent font-sans text-[0.7rem] font-medium',
                     'focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary',
                     isActive ? 'text-primary' : 'text-subtle'
                   )}

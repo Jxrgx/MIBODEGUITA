@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronRight, Package, User, Heart, LogOut, ArrowLeft } from 'lucide-react';
-import { ProductCard } from './ProductCard';
+import { ProductGrid } from './ProductGrid';
 import { OrderDetailsModal } from './common/OrderDetailsModal';
 import { Badge, Button, Card, EmptyState, IconButton } from './ui';
 import { formatMoney } from '../lib/format';
@@ -125,22 +125,17 @@ export function Account({ user, orders, favorites, onLogout, onToggleFavorite, o
         return (
             <div className="font-sans">
                 <SubViewHeader title="Favoritos" onBack={backToMenu} />
-                {favorites.length === 0 ? (
-                    <EmptyState icon={Heart} title="Aún no tienes favoritos" message="Toca el corazón de un producto para guardarlo aquí." />
-                ) : (
-                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                        {favorites.map(product => (
-                            <ProductCard
-                                key={product.id}
-                                product={product}
-                                onAdd={onAddToCart}
-                                isFavorite={true}
-                                onToggleFavorite={() => onToggleFavorite(product)}
-                                onClick={() => onProductSelect(product)}
-                            />
-                        ))}
-                    </div>
-                )}
+                <ProductGrid
+                    products={favorites}
+                    favorites={favorites}
+                    onToggleFavorite={onToggleFavorite}
+                    onAdd={onAddToCart}
+                    onOpenProduct={onProductSelect}
+                    label="Mis favoritos"
+                    emptyState={
+                        <EmptyState icon={Heart} title="Aún no tienes favoritos" message="Toca el corazón de un producto para guardarlo aquí." />
+                    }
+                />
             </div>
         );
     }

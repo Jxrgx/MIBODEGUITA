@@ -47,10 +47,15 @@
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 12px 28px -6px rgba(0, 0, 0, 0.18);
 
+  /* Alto de la barra inferior móvil (h-16 + borde de 1 px), sin el área segura.
+     Úsalo para fijar elementos encima de ella: bottom-[calc(var(--spacing-nav)+env(safe-area-inset-bottom))] */
+  --spacing-nav: 4.0625rem;
+
   /* Animaciones de UI (nombres distintos a los de animations.css) */
   --animate-overlay-in: overlay-in 0.2s ease-out;
   --animate-dialog-in: dialog-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   --animate-sheet-in: sheet-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-drawer-in: drawer-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
   @keyframes overlay-in {
     from { opacity: 0; }
@@ -62,8 +67,14 @@
     to { opacity: 1; transform: scale(1); }
   }
 
+  /* Terminan en "none": un transform persistente rompe los position: fixed internos */
   @keyframes sheet-in {
     from { transform: translateY(100%); }
-    to { transform: translateY(0); }
+    to { transform: none; }
+  }
+
+  @keyframes drawer-in {
+    from { transform: translateX(100%); }
+    to { transform: none; }
   }
 }

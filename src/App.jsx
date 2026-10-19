@@ -19,10 +19,12 @@ import { CartProvider, useCart } from './context/cart.jsx';
 import { OrderService } from './services/orders';
 import { UserService } from './services/users';
 import { OrderSuccessModal } from './components/OrderSuccessModal';
+import { CartDrawer } from './components/cart/CartDrawer';
 import { MainLayout } from './layouts/MainLayout';
 import { useAppData } from './hooks/useAppData';
 import { useProductSearch } from './hooks/useProductSearch';
 import { paymentLabel } from './lib/orders';
+import { isBulkProduct } from './lib/cart';
 
 function FullScreenLoader({ label }) {
   return (
@@ -92,6 +94,7 @@ function App() {
   const [listName, setListName] = useState('');
 
   const [showCheckout, setShowCheckout] = useState(false);
+  const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
   const [flyingItem, setFlyingItem] = useState(null);
   const [toast, setToast] = useState(null);
   const [showMap, setShowMap] = useState(false);
@@ -276,7 +279,32 @@ function App() {
     showToast('Lista cargada al carrito');
   };
 
+  // Los productos a granel solo abren su modal; el aviso llega hasta que se agregan de verdad
+  const addToCartWithToast = (product) => {
+    addToCart(product);
+    if (!isBulkProduct(product)) showToast(`Agregado: ${product.name}`);
+  };
+
   const goToTab = (tab) => navigate(tab === 'home' ? '/' : `/${tab}`);
+
+  // Mismo contenido para la página /cart y el drawer de escritorio
+  const cartContentProps = {
+    cart,
+    cartTotal,
+    finalTotal,
+    totalSavings,
+    isSavingList,
+    startSaveList,
+    newListName,
+    setNewListName,
+    onConfirmSaveList: saveList,
+    cancelSaveList,
+    removeFromCart,
+    updateQuantity,
+    savedLists,
+    loadList,
+    deleteList
+  };
 
   const handleLogout = () => {
     logout();
@@ -358,6 +386,7 @@ function App() {
               searchHistory={searchHistory}
               addToHistory={addToHistory}
               removeFromHistory={removeFromHistory}
+              onOpenCartDrawer={() => setIsCartDrawerOpen(true)}
             />
           }>
             <Route index element={
@@ -375,10 +404,7 @@ function App() {
                 handleCategoryClick={handleCategoryClick}
                 setSelectedSubcategory={setSelectedSubcategory}
                 handleTabChange={goToTab}
-                addToCart={(product) => {
-                  addToCart(product);
-                  showToast(`Agregado: ${product.name}`);
-                }}
+                addToCart={addToCartWithToast}
                 favorites={favorites}
                 toggleFavorite={toggleFavorite}
                 handleOpenProduct={setSelectedProduct}
@@ -400,22 +426,8 @@ function App() {
             } />
             <Route path="cart" element={
               <CartView
-                cart={cart}
-                cartTotal={cartTotal}
-                isSavingList={isSavingList}
-                startSaveList={startSaveList}
-                newListName={newListName}
-                setNewListName={setNewListName}
-                onConfirmSaveList={saveList}
-                cancelSaveList={cancelSaveList}
-                removeFromCart={removeFromCart}
-                updateQuantity={updateQuantity}
-                totalSavings={totalSavings}
-                finalTotal={finalTotal}
+                {...cartContentProps}
                 setShowCheckout={setShowCheckout}
-                savedLists={savedLists}
-                loadList={loadList}
-                deleteList={deleteList}
                 setActiveTab={goToTab}
               />
             } />
@@ -428,10 +440,7 @@ function App() {
                 handleCategoryClick={handleCategoryClick}
                 searchQuery={searchQuery}
                 filteredProducts={filteredProducts}
-                addToCart={(product) => {
-                  addToCart(product);
-                  showToast(`Agregado: ${product.name}`);
-                }}
+                addToCart={addToCartWithToast}
                 handleOpenProduct={setSelectedProduct}
                 favorites={favorites}
                 toggleFavorite={toggleFavorite}
@@ -470,6 +479,21 @@ function App() {
           onProductSelect={setSelectedProduct}
         />
       )}
+
+      <CartDrawer
+        open={isCartDrawerOpen}
+        onClose={() => setIsCartDrawerOpen(false)}
+        onCheckout={() => {
+          // Se cierra antes de abrir el checkout para no apilar dos modales
+          setIsCartDrawerOpen(false);
+          setShowCheckout(true);
+        }}
+        onGoShopping={() => {
+          setIsCartDrawerOpen(false);
+          goToTab('home');
+        }}
+        {...cartContentProps}
+      />
 
       {showCheckout && (
         <CheckoutModal

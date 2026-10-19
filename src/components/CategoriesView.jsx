@@ -1,6 +1,6 @@
 import React from 'react';
 import { SearchX } from 'lucide-react';
-import { ProductCard } from './ProductCard';
+import { ProductGrid } from './ProductGrid';
 import { EmptyState } from './ui';
 import { getCategoryIcon } from '../lib/categoryIcons';
 
@@ -43,26 +43,20 @@ export function CategoriesView({
 
             {searchQuery && (
                 <section className="mt-8" aria-label={`Productos que coinciden con ${searchQuery}`}>
-                    {filteredProducts.length > 0 ? (
-                        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                            {filteredProducts.map(product => (
-                                <ProductCard
-                                    key={product.id}
-                                    product={product}
-                                    onAdd={addToCart}
-                                    onClick={() => handleOpenProduct(product)}
-                                    isFavorite={favorites.some(f => f.id === product.id)}
-                                    onToggleFavorite={() => toggleFavorite(product)}
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        <EmptyState
-                            icon={SearchX}
-                            title="Sin resultados"
-                            message={`No se encontraron productos que coincidan con "${searchQuery}".`}
-                        />
-                    )}
+                    <ProductGrid
+                        products={filteredProducts}
+                        favorites={favorites}
+                        onToggleFavorite={toggleFavorite}
+                        onAdd={addToCart}
+                        onOpenProduct={handleOpenProduct}
+                        emptyState={
+                            <EmptyState
+                                icon={SearchX}
+                                title="Sin resultados"
+                                message={`No se encontraron productos que coincidan con "${searchQuery}".`}
+                            />
+                        }
+                    />
                 </section>
             )}
         </div>

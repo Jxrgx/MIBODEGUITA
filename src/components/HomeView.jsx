@@ -1,32 +1,17 @@
 import React from 'react';
 import { ArrowUpDown, SearchX } from 'lucide-react';
 import { ProductCard } from './ProductCard';
-import { ProductSkeleton } from './ProductSkeleton';
+import { ProductGrid } from './ProductGrid';
 import { OffersCarousel } from './OffersCarousel';
 import { FlashSale } from './FlashSale';
 import { ComboSection } from './ComboSection';
 import { Flyer } from './Flyer';
 import { Button, Chip, EmptyState, SectionHeader } from './ui';
 
-const productGridClass = 'grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5';
-
 const sortLabels = {
     asc: 'Menor precio',
     desc: 'Mayor precio'
 };
-
-function ProductTile({ product, index, priority, addToCart, favorites, toggleFavorite, handleOpenProduct }) {
-    return (
-        <ProductCard
-            product={product}
-            onAdd={addToCart}
-            isFavorite={favorites.some(fav => fav.id === product.id)}
-            onToggleFavorite={() => toggleFavorite(product)}
-            onClick={() => handleOpenProduct(product)}
-            priority={priority ?? index < 4}
-        />
-    );
-}
 
 export function HomeView({
     categories,
@@ -53,7 +38,7 @@ export function HomeView({
     suggestions
 }) {
     const isHome = !selectedCategory && !searchQuery;
-    const tileProps = { addToCart, favorites, toggleFavorite, handleOpenProduct };
+    const gridProps = { favorites, onToggleFavorite: toggleFavorite, onAdd: addToCart, onOpenProduct: handleOpenProduct };
     const subcategories = categories.find(c => c.name === selectedCategory)?.subcategories || [];
     const remaining = filteredProducts.length - visibleCount;
 
@@ -86,7 +71,14 @@ export function HomeView({
                             <ul className="hide-scrollbar -mx-4 flex snap-x snap-mandatory list-none gap-3 overflow-x-auto px-4 pb-2">
                                 {bestSellers.map(product => (
                                     <li key={product.id} className="w-40 shrink-0 snap-start sm:w-44">
-                                        <ProductTile product={product} priority {...tileProps} />
+                                        <ProductCard
+                                            product={product}
+                                            onAdd={addToCart}
+                                            isFavorite={favorites.some(fav => fav.id === product.id)}
+                                            onToggleFavorite={() => toggleFavorite(product)}
+                                            onClick={() => handleOpenProduct(product)}
+                                            priority
+                                        />
                                     </li>
                                 ))}
                             </ul>
@@ -111,7 +103,27 @@ export function HomeView({
                     </Chip>
                 </SectionHeader>
 
-                {filteredProducts.length === 0 ? (
+                {/* Mientras carga se muestran skeletons, no el estado vacío */}
+                {isLoading || filteredProducts.length > 0 ? (
+                    <>
+                        <ProductGrid
+                            products={visibleProducts}
+                            isLoading={isLoading}
+                            animateEntrance
+                            label={selectedCategory || (searchQuery ? `Resultados para ${searchQuery}` : 'Productos recomendados')}
+                            className="mb-6"
+                            {...gridProps}
+                        />
+
+                        {!isLoading && remaining > 0 && (
+                            <div className="mb-8 flex justify-center">
+                                <Button variant="outline" onClick={() => setVisibleCount(prev => prev + 20)}>
+                                    Ver más productos ({remaining} restantes)
+                                </Button>
+                            </div>
+                        )}
+                    </>
+                ) : (
                     <>
                         <EmptyState
                             icon={SearchX}
@@ -123,37 +135,7 @@ export function HomeView({
                         {suggestions && suggestions.length > 0 && (
                             <div className="mb-8">
                                 <h3 className="mb-3 font-semibold text-ink">¿Quizás quisiste decir…?</h3>
-                                <div className={productGridClass}>
-                                    {suggestions.map((product, index) => (
-                                        <ProductTile key={product.id} product={product} index={index} {...tileProps} />
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </>
-                ) : (
-                    <>
-                        <div className={`${productGridClass} mb-6`}>
-                            {isLoading ? (
-                                Array.from({ length: 6 }).map((_, idx) => <ProductSkeleton key={idx} />)
-                            ) : (
-                                visibleProducts.map((product, index) => (
-                                    <div
-                                        key={product.id}
-                                        className={`animate-slide-up delay-${Math.min(index * 50, 300)}`}
-                                        style={{ animationFillMode: 'both' }}
-                                    >
-                                        <ProductTile product={product} index={index} {...tileProps} />
-                                    </div>
-                                ))
-                            )}
-                        </div>
-
-                        {remaining > 0 && (
-                            <div className="mb-8 flex justify-center">
-                                <Button variant="outline" onClick={() => setVisibleCount(prev => prev + 20)}>
-                                    Ver más productos ({remaining} restantes)
-                                </Button>
+                                <ProductGrid products={suggestions} label="Productos sugeridos" {...gridProps} />
                             </div>
                         )}
                     </>

@@ -23,7 +23,8 @@ export const MainLayout = ({
     showToast,
     searchHistory,
     addToHistory,
-    removeFromHistory
+    removeFromHistory,
+    onOpenCartDrawer
 }) => {
     const {
         selectedBulkProduct,
@@ -76,6 +77,13 @@ export const MainLayout = ({
 
     const handleSearchClear = useCallback(() => setSearchQuery(''), [setSearchQuery]);
 
+    // El header solo existe como navegación desde md: ahí el carrito abre el drawer en vez de navegar.
+    // En /cart no tiene sentido abrir un panel con el mismo contenido.
+    const handleHeaderTabChange = useCallback((tab) => {
+        if (tab === 'cart' && onOpenCartDrawer && location.pathname !== '/cart') onOpenCartDrawer();
+        else handleTabChange(tab);
+    }, [onOpenCartDrawer, location.pathname, handleTabChange]);
+
     const showCartStatus = cartCount > 0 && location.pathname !== '/cart';
 
     return (
@@ -111,7 +119,7 @@ export const MainLayout = ({
                 searchHistory={searchHistory}
                 onHistoryRemove={removeFromHistory}
                 activeTab={activeTab}
-                onTabChange={handleTabChange}
+                onTabChange={handleHeaderTabChange}
                 cartCount={cartCount}
                 cartTotal={cartTotal}
             />

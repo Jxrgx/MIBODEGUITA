@@ -97,23 +97,24 @@ Mucho blanco y gris claro, azul de marca para navegar, amarillo solo para la acc
 
 ## 5. Tarjeta de producto
 
-Referencia: `src/components/ProductCard.jsx`. Toda vista que muestre productos en lista o cuadrícula usa este componente; no crees variantes paralelas.
+Referencia: `src/components/ProductCard.jsx`. Toda vista que muestre productos en lista o cuadrícula usa este componente; no crees variantes paralelas. **Las cuadrículas usan `ProductGrid`** (`src/components/ProductGrid.jsx`), que ya trae columnas, skeletons de carga y estado vacío (`emptyState`); no copies las clases de la cuadrícula.
 
 **Anatomía (de arriba abajo):**
 
-1. **Imagen** con `ProductImage` (`h-36`, `object-contain`, `loading="lazy"` salvo las primeras 4 → `priority`). Si la imagen falla, muestra la canasta gris; nunca el ícono roto.
+1. **Imagen** con `ProductImage` dentro de un contenedor **cuadrado** (`aspect-square rounded-md bg-gray-50 p-3`, imagen con `mix-blend-multiply` para fundir fondos blancos). `loading="lazy"` salvo las primeras 4 (`priority`). Si la imagen falla, muestra la canasta gris; nunca el ícono roto.
 2. **Favorito** arriba a la izquierda: `size-10`, `aria-pressed`, `aria-label` con el nombre del producto.
 3. **Descuento** arriba a la derecha: `Badge tone="sale"` con `-N%`, **solo si `originalPrice > price`**.
 4. **Nombre** con `line-clamp-2`, `font-semibold`.
 5. **Precio por unidad** (`unitPrice`) en `text-xs text-subtle`, si existe.
 6. **Precio:** tachado (`line-through text-subtle`) si hay descuento real, y debajo el precio actual en `text-xl font-extrabold text-primary`.
-7. **Botón "Agregar"**: ancho completo, `min-h-11`, `bg-primary text-white`, ícono `Plus` y `aria-label="Agregar {nombre} al carrito"`.
+7. **Botón "Agregar"**: ancho completo, `min-h-11`, `bg-primary text-white`, ícono `Plus` y `aria-label="Agregar {nombre} al carrito"`. **Cuando el producto ya está en el carrito, se convierte en el selector `− n +`** del mismo tamaño y color, conectado a `useCart()` (`findCartLineIndex` de `src/lib/cart.js`). En 1, el botón izquierdo muestra un bote y quita el producto. El foco pasa al control nuevo cuando se usa el teclado.
 
 **Reglas:**
 
 - **El botón de agregar es la acción principal de la tarjeta**: siempre visible, sin hover para descubrirlo y siempre en la misma posición (`mt-auto`) para que las filas queden alineadas.
 - **Imagen y nombre forman un `<button>` que abre el detalle**; favorito y agregar son botones hermanos. Nunca anides botones ni pongas `onClick` en un `div`.
-- **Productos a granel** (Frutas y Verduras, `averageWeight`, `isBulk`): el mismo botón abre `BulkProductModal` para elegir peso o piezas.
+- **Productos a granel** (`isBulkProduct()` de `src/lib/cart.js`): el botón siempre dice "Agregar" y abre `BulkProductModal` para elegir peso o piezas; nunca muestran el selector `− n +`. Tampoco muestres el aviso "Agregado" al abrir el modal: todavía no se agregó nada.
+- **Radios:** la tarjeta usa `rounded-lg`. Si se quieren esquinas más suaves, cambia `--radius-lg` en `theme.css`; no uses `rounded-2xl` (con nuestra escala mide lo mismo y deja la escala desordenada).
 - **Feedback al agregar:** toast breve ("Agregado: …") y el contador del carrito con `cart-shake`. Sin confeti ni sonidos.
 - **Cuadrícula:** `grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5`.
 
@@ -128,7 +129,9 @@ Referencia: `src/components/ProductCard.jsx`. Toda vista que muestre productos e
 
 ## 6. Carrito lateral deslizable
 
-> Estado actual: el carrito es una página (`/cart`, `CartView.jsx`). Este es el patrón **objetivo**. Mientras no exista, no lo dupliques: implementa el panel reutilizando `CartView`.
+> Implementado en `src/components/cart/`: `CartContents` (contenido compartido), `CheckoutBar` (total y "Realizar pedido"), `CartDrawer` (panel de escritorio) y `CartView.jsx` (página `/cart`). Cualquier cambio del carrito se hace en `CartContents`/`CheckoutBar` para que ambos sigan iguales. App pasa a los dos el mismo objeto `cartContentProps`.
+>
+> En la página `/cart`, `CheckoutBar` es `sticky` sobre la barra inferior usando el token `--spacing-nav` de `theme.css` (alto de `BottomNav`); no calcules esa altura a mano.
 
 **Comportamiento por tamaño:**
 
