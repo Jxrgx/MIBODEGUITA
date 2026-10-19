@@ -35,8 +35,8 @@ export function Toast({ message, type = 'success', onClose, duration = 3000 }) {
             role={type === 'error' ? 'alert' : 'status'}
             aria-live={type === 'error' ? 'assertive' : 'polite'}
             className={cn(
-                // bottom-24 en móvil para quedar sobre la barra inferior; en escritorio no hay barra
-                'fixed bottom-24 left-1/2 z-[3600] flex w-max max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-3 rounded-pill py-3 pr-5 pl-3 font-sans text-white shadow-lg transition-all duration-300 md:bottom-8',
+                // bottom-40 en móvil: queda sobre la barra inferior y la del carrito; en escritorio no hay barras abajo
+                'fixed bottom-40 left-1/2 z-[3600] flex w-max max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-3 rounded-pill py-3 pr-5 pl-3 font-sans text-white shadow-lg transition-all duration-300 md:bottom-8',
                 toneClasses[type] || toneClasses.success,
                 isVisible ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'
             )}

@@ -350,11 +350,14 @@ function App() {
               handleScan={handleScan}
               products={products}
               categories={categories}
+              selectedCategory={selectedCategory}
               handleCategoryClick={handleCategoryClick}
               handleOpenProduct={setSelectedProduct}
               clearFilters={clearFilters}
               showToast={showToast}
+              searchHistory={searchHistory}
               addToHistory={addToHistory}
+              removeFromHistory={removeFromHistory}
             />
           }>
             <Route index element={

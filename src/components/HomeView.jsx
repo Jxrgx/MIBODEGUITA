@@ -7,7 +7,6 @@ import { FlashSale } from './FlashSale';
 import { ComboSection } from './ComboSection';
 import { Flyer } from './Flyer';
 import { Button, Chip, EmptyState, SectionHeader } from './ui';
-import { getCategoryIcon } from '../lib/categoryIcons';
 
 const productGridClass = 'grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5';
 
@@ -15,38 +14,6 @@ const sortLabels = {
     asc: 'Menor precio',
     desc: 'Mayor precio'
 };
-
-function DepartmentsRow({ categories, handleCategoryClick, onSeeAll }) {
-    return (
-        <section className="mb-6" aria-labelledby="departments-title">
-            <SectionHeader id="departments-title" title="Departamentos" actionLabel="Ver todos" onAction={onSeeAll} />
-            <ul className="hide-scrollbar -mx-4 flex snap-x list-none gap-2 overflow-x-auto px-4 pb-1">
-                {categories.map((cat, index) => {
-                    const Icon = getCategoryIcon(cat.name, cat.icon);
-                    return (
-                        <li key={`${cat.id}-${index}`} className="w-20 shrink-0 snap-start">
-                            <button
-                                type="button"
-                                onClick={() => handleCategoryClick(cat.name)}
-                                className="group flex w-full cursor-pointer flex-col items-center gap-1.5 rounded-md border-0 bg-transparent p-1 font-sans focus-visible:outline-2 focus-visible:outline-primary"
-                            >
-                                <span
-                                    className="flex size-14 items-center justify-center rounded-lg bg-primary-soft text-primary-dark shadow-sm transition-transform group-hover:scale-105"
-                                    style={cat.color ? { backgroundColor: cat.color } : undefined}
-                                >
-                                    <Icon size={24} aria-hidden="true" />
-                                </span>
-                                <span className="line-clamp-2 text-center text-xs leading-tight font-medium text-muted">
-                                    {cat.name}
-                                </span>
-                            </button>
-                        </li>
-                    );
-                })}
-            </ul>
-        </section>
-    );
-}
 
 function ProductTile({ product, index, priority, addToCart, favorites, toggleFavorite, handleOpenProduct }) {
     return (
@@ -71,7 +38,6 @@ export function HomeView({
     isLoading,
     visibleCount,
     setVisibleCount,
-    handleCategoryClick,
     setSelectedSubcategory,
     handleTabChange,
     addToCart,
@@ -99,14 +65,6 @@ export function HomeView({
 
     return (
         <div className="font-sans">
-            {isHome && (
-                <DepartmentsRow
-                    categories={categories}
-                    handleCategoryClick={handleCategoryClick}
-                    onSeeAll={() => handleTabChange('categories')}
-                />
-            )}
-
             {selectedCategory && subcategories.length > 0 && (
                 <div className="hide-scrollbar -mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-1" role="group" aria-label="Subcategorías">
                     <Chip selected={!selectedSubcategory} onClick={() => setSelectedSubcategory(null)}>Todo</Chip>

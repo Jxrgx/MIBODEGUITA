@@ -2,9 +2,11 @@ import React, { useEffect, useCallback } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Header } from '../components/Header';
 import { BottomNav } from '../components/BottomNav';
+import { CartStatusBar } from '../components/CartStatusBar';
 import { BarcodeScanner } from '../components/BarcodeScanner';
 import { BulkProductModal } from '../components/BulkProductModal';
 import { useCart } from '../context/cart';
+import { cn } from '../lib/cn';
 
 export const MainLayout = ({
     searchQuery,
@@ -13,9 +15,15 @@ export const MainLayout = ({
     setIsScanning,
     handleScan,
     products,
+    categories,
+    selectedCategory,
+    handleCategoryClick,
+    handleOpenProduct,
     clearFilters,
     showToast,
-    addToHistory // New prop
+    searchHistory,
+    addToHistory,
+    removeFromHistory
 }) => {
     const {
         selectedBulkProduct,
@@ -23,11 +31,13 @@ export const MainLayout = ({
         addBulkToCart,
         addToCart,
         cartCount,
+        cartTotal,
         isCartAnimating
     } = useCart();
 
     const location = useLocation();
     const navigate = useNavigate();
+    const isHomeRoute = location.pathname === '/';
 
     // Clear search when location changes (except when going to home)
     useEffect(() => {
@@ -55,28 +65,18 @@ export const MainLayout = ({
         }
     }, [clearFilters, navigate]);
 
-    const handleSearchInput = useCallback((query) => {
+    // Enter, "Ver todos", historial o voz: la búsqueda se confirma y llena la cuadrícula del Inicio
+    const handleSearchCommit = useCallback((query) => {
+        clearFilters?.(); // Una búsqueda nueva no hereda la categoría ni el orden anteriores
         setSearchQuery(query);
-        if (query && location.pathname !== '/') {
-            navigate('/');
-        }
-        // Debounce or wait for enter could be better, but for now we rely on user action
-        // Actually, we should add to history when user "submits" or after a delay?
-        // Let's add it when they hit enter or select a suggestion. 
-        // Since this is just input change, we might not want to add every keystroke.
-        // We'll handle addToHistory in Header's onSearchSubmit if possible, or here if we had a submit event.
-        // For now, let's assume Header calls a submit handler.
-    }, [setSearchQuery, location.pathname, navigate]);
+        addToHistory?.(query);
+        if (location.pathname !== '/') navigate('/');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [clearFilters, setSearchQuery, addToHistory, location.pathname, navigate]);
 
-    // New handler for explicit search submission (e.g. Enter key)
-    const handleSearchSubmit = useCallback((query) => {
-        if (query && addToHistory) {
-            addToHistory(query);
-        }
-        if (location.pathname !== '/') {
-            navigate('/');
-        }
-    }, [addToHistory, location.pathname, navigate]);
+    const handleSearchClear = useCallback(() => setSearchQuery(''), [setSearchQuery]);
+
+    const showCartStatus = cartCount > 0 && location.pathname !== '/cart';
 
     return (
         <div className="app-container">
@@ -97,19 +97,27 @@ export const MainLayout = ({
 
             <Header
                 searchQuery={searchQuery}
-                setSearchQuery={handleSearchInput}
-                onSearchSubmit={handleSearchSubmit}
+                onSearchCommit={handleSearchCommit}
+                onSearchClear={handleSearchClear}
                 // onOpenScanner se omite: BarcodeScanner aún es una simulación (elige un producto al azar)
                 products={products}
+                categories={categories}
+                selectedCategory={selectedCategory}
+                onCategorySelect={handleCategoryClick}
+                showCategories={isHomeRoute}
+                onProductSelect={handleOpenProduct}
                 addToCart={addToCart}
                 showToast={showToast}
+                searchHistory={searchHistory}
+                onHistoryRemove={removeFromHistory}
                 activeTab={activeTab}
                 onTabChange={handleTabChange}
                 cartCount={cartCount}
+                cartTotal={cartTotal}
             />
 
-            {/* pb-28: espacio para la barra inferior en móvil; en escritorio la navegación vive en el header */}
-            <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-4 pb-28 md:pb-10">
+            {/* Espacio inferior para la barra de navegación (y la del carrito) en móvil; en escritorio no hay barras abajo */}
+            <main className={cn('mx-auto w-full max-w-6xl flex-1 px-4 pt-4 md:pb-10', showCartStatus ? 'pb-44' : 'pb-28')}>
                 <div key={location.pathname} className="animate-page-enter">
                     <Outlet />
                 </div>
@@ -120,7 +128,11 @@ export const MainLayout = ({
                 onTabChange={handleTabChange}
                 cartCount={cartCount}
                 isAnimating={isCartAnimating}
-            />
+            >
+                {showCartStatus && (
+                    <CartStatusBar count={cartCount} total={cartTotal} onOpen={() => navigate('/cart')} />
+                )}
+            </BottomNav>
         </div>
     );
 };
