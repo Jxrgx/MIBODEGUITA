@@ -105,7 +105,7 @@ export function SearchBox({
     const optionId = (index) => `${listboxId}-option-${index}`;
 
     return (
-        <div ref={containerRef} className="relative min-w-0 flex-1">
+        <div ref={containerRef} className="min-w-0 flex-1 md:relative">
             <form
                 role="search"
                 onSubmit={(e) => {
@@ -162,7 +162,7 @@ export function SearchBox({
             </form>
 
             {panelVisible && (
-                <div className="absolute inset-x-0 top-full z-10 mt-2 overflow-hidden rounded-lg border border-border bg-surface shadow-lg animate-dialog-in">
+                <div className="absolute inset-x-3 top-full z-10 mt-1 overflow-hidden rounded-lg border border-border bg-surface shadow-lg animate-dialog-in md:inset-x-0 md:mt-2">
                     {showHistory && (
                         <p className="px-4 pt-3 pb-1 text-xs font-semibold text-subtle uppercase">Búsquedas recientes</p>
                     )}

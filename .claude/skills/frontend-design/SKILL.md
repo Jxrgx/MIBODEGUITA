@@ -191,7 +191,7 @@ Tampoco se permiten patrones que engañen al cliente:
 
 - **Precio anterior inventado** (por ejemplo `price * 1.2` cuando falta `originalPrice`).
 - **Escasez falsa**: barras de "quedan pocas unidades" sin inventario real.
-- **Contadores que se reinician solos** para presionar la compra. El contador del Pasillo Sorpresa solo es válido porque la oferta termina de verdad al final del día.
+- **Contadores de cuenta regresiva** para presionar la compra, salvo que la oferta termine de verdad a esa hora y se pueda verificar.
 - **Datos de relleno visibles** para el cliente: teléfonos o direcciones de ejemplo, funciones simuladas (como el escáner de código de barras actual).
 
 Si una solicitud pide algo de esta lista, señálalo y propone una alternativa honesta (ofertas reales, combos, "Más vendidos").

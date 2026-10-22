@@ -109,7 +109,8 @@ export function Header({
     return (
         <header className="sticky top-0 z-[100] font-sans shadow-sm">
             <div className="bg-primary">
-                <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3">
+                {/* relative: en móvil el desplegable del buscador se posiciona respecto a esta fila */}
+                <div className="relative mx-auto flex max-w-6xl items-center gap-3 px-4 py-3">
                     <button
                         type="button"
                         onClick={() => onTabChange?.('home')}

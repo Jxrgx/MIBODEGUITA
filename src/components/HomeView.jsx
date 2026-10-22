@@ -2,8 +2,6 @@ import React from 'react';
 import { ArrowUpDown, SearchX } from 'lucide-react';
 import { ProductCard } from './ProductCard';
 import { ProductGrid } from './ProductGrid';
-import { OffersCarousel } from './OffersCarousel';
-import { FlashSale } from './FlashSale';
 import { ComboSection } from './ComboSection';
 import { Flyer } from './Flyer';
 import { Button, Chip, EmptyState, SectionHeader } from './ui';
@@ -63,14 +61,12 @@ export function HomeView({
 
             {isHome && (
                 <>
-                    <OffersCarousel />
-
                     {bestSellers.length > 0 && (
                         <section className="mb-6" aria-labelledby="best-sellers-title">
                             <SectionHeader id="best-sellers-title" title="Más vendidos" />
-                            <ul className="hide-scrollbar -mx-4 flex snap-x snap-mandatory list-none gap-3 overflow-x-auto px-4 pb-2">
+                            <ul className="hide-scrollbar -mx-4 flex snap-x snap-mandatory list-none gap-3 overflow-x-auto px-4 pb-2 md:mx-0 md:grid md:overflow-visible md:px-0 md:pb-0 md:grid-cols-4">
                                 {bestSellers.map(product => (
-                                    <li key={product.id} className="w-40 shrink-0 snap-start sm:w-44">
+                                    <li key={product.id} className="w-40 shrink-0 snap-start sm:w-44 md:w-auto">
                                         <ProductCard
                                             product={product}
                                             onAdd={addToCart}
@@ -85,7 +81,6 @@ export function HomeView({
                         </section>
                     )}
 
-                    {(storeSettings?.visibility?.flashSale ?? true) && <FlashSale onAdd={addToCart} />}
                     {(storeSettings?.visibility?.combos ?? true) && (
                         <ComboSection onAddCombo={handleAddCombo} onSeeAll={() => handleTabChange('combos')} />
                     )}

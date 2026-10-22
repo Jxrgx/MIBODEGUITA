@@ -91,7 +91,7 @@ export function Account({ user, orders, favorites, onLogout, onToggleFavorite, o
                 {orders.length === 0 ? (
                     <EmptyState icon={Package} title="Aún no tienes pedidos" message="Cuando hagas tu primer pedido aparecerá aquí." />
                 ) : (
-                    <ul className="grid list-none gap-3 sm:grid-cols-2">
+                    <ul className="grid list-none gap-3 sm:grid-cols-2 lg:grid-cols-3">
                         {orders.map(order => (
                             <OrderCard key={order.id} order={order} onOpen={setSelectedOrder} />
                         ))}
@@ -107,7 +107,7 @@ export function Account({ user, orders, favorites, onLogout, onToggleFavorite, o
 
     if (currentView === 'personal') {
         return (
-            <div className="font-sans">
+            <div className="mx-auto max-w-2xl font-sans">
                 <SubViewHeader title="Información personal" onBack={backToMenu} />
                 <Card>
                     <dl className="divide-y divide-border">
@@ -141,7 +141,7 @@ export function Account({ user, orders, favorites, onLogout, onToggleFavorite, o
     }
 
     return (
-        <div className="flex flex-col gap-5 font-sans">
+        <div className="mx-auto flex max-w-2xl flex-col gap-5 font-sans">
             <div className="flex items-center gap-4 rounded-lg bg-primary p-4 text-white shadow-sm">
                 {user.photoURL ? (
                     <img src={user.photoURL} alt="" referrerPolicy="no-referrer" className="size-14 rounded-pill border-2 border-white/40 object-cover" />

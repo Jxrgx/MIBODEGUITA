@@ -9,6 +9,9 @@ import { formatMoney } from '../../lib/format';
  * Contenido del carrito compartido por la página /cart y el drawer de escritorio:
  * conteo, "Guardar lista", productos, desglose de precios y listas guardadas.
  * La barra con "Realizar pedido" (CheckoutBar) la coloca cada contenedor.
+ *
+ * split: desde lg, productos a la izquierda y resumen fijo a la derecha (página /cart).
+ * summaryFooter: contenido extra dentro de la tarjeta del resumen (p. ej. el botón en escritorio).
  */
 export function CartContents({
     cart,
@@ -27,7 +30,9 @@ export function CartContents({
     loadList,
     deleteList,
     onGoShopping,
-    bleedClass
+    bleedClass,
+    split = false,
+    summaryFooter = null
 }) {
     const itemCount = cart.reduce((acc, item) => acc + item.quantity, 0);
     const isEmpty = cart.length === 0;
@@ -65,8 +70,8 @@ export function CartContents({
                     onAction={onGoShopping}
                 />
             ) : (
-                <>
-                    <ul className="flex list-none flex-col gap-3">
+                <div className={split ? 'lg:grid lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start lg:gap-x-6' : undefined}>
+                    <ul className="flex list-none flex-col gap-3 lg:col-start-1">
                         {cart.map((item, index) => (
                             <CartItem
                                 key={`${item.id}-${index}`}
@@ -78,7 +83,7 @@ export function CartContents({
                         ))}
                     </ul>
 
-                    <Card className="mt-6">
+                    <Card className={split ? 'mt-6 lg:sticky lg:top-24 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mt-0' : 'mt-6'}>
                         {totalSavings > 0 && (
                             <p className="mb-4 flex items-center gap-2 rounded-sm bg-danger-soft px-3 py-2 text-sm font-semibold text-accent">
                                 <Tag size={16} aria-hidden="true" />
@@ -92,11 +97,18 @@ export function CartContents({
                             ]}
                             total={finalTotal ?? cartTotal}
                         />
+                        {summaryFooter}
                     </Card>
-                </>
+
+                    {savedLists.length > 0 && (
+                        <div className="lg:col-start-1">
+                            <SavedLists savedLists={savedLists} loadList={loadList} deleteList={deleteList} bleedClass={bleedClass} />
+                        </div>
+                    )}
+                </div>
             )}
 
-            {savedLists.length > 0 && (
+            {isEmpty && savedLists.length > 0 && (
                 <SavedLists savedLists={savedLists} loadList={loadList} deleteList={deleteList} bleedClass={bleedClass} />
             )}
         </div>

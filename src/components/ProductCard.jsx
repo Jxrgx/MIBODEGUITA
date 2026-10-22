@@ -24,7 +24,7 @@ function CartStepper({ product, quantity, onIncrement, onDecrement, incrementRef
             >
                 {isLast ? <Trash2 size={18} aria-hidden="true" /> : <Minus size={18} strokeWidth={3} aria-hidden="true" />}
             </button>
-            <span className="min-w-8 text-center font-bold tabular-nums" aria-live="polite">
+            <span className="min-w-6 text-center font-bold tabular-nums" aria-live="polite">
                 {quantity}
                 <span className="sr-only"> en el carrito</span>
             </span>
@@ -105,7 +105,7 @@ export function ProductCard({ product, onAdd, isFavorite, onToggleFavorite, onCl
                     {discount > 0 && (
                         <p className="text-xs text-subtle line-through">{formatMoney(product.originalPrice)}</p>
                     )}
-                    <p className="text-xl font-extrabold tracking-tight text-primary">{formatMoney(product.price)}</p>
+                    <p className="text-lg font-extrabold tracking-tight text-primary min-[375px]:text-xl">{formatMoney(product.price)}</p>
                 </div>
             </button>
 

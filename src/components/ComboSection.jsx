@@ -29,11 +29,11 @@ export function ComboSection({ onAddCombo, onSeeAll }) {
         <section className="mb-6 font-sans" aria-labelledby="combos-title">
             <SectionHeader id="combos-title" title="Combos Morralla" actionLabel="Ver todos" onAction={onSeeAll} />
 
-            <ul className="hide-scrollbar -mx-4 flex snap-x snap-mandatory list-none gap-3 overflow-x-auto px-4 pb-2">
+            <ul className="hide-scrollbar -mx-4 flex snap-x snap-mandatory list-none gap-3 overflow-x-auto px-4 pb-2 md:mx-0 md:grid md:overflow-visible md:px-0 md:pb-0 md:grid-cols-2 lg:grid-cols-3">
                 {combos.map(combo => (
                     <li
                         key={combo.id}
-                        className="flex w-72 shrink-0 snap-start flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-sm"
+                        className="flex w-72 shrink-0 snap-start flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-sm md:w-auto"
                     >
                         <div className="flex h-36 items-center justify-center bg-gray-50">
                             {combo.image ? (
